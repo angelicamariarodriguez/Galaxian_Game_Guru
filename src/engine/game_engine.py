@@ -1,3 +1,5 @@
+from src.ecs.systems.s_movement import system_movement
+from src.ecs.systems.s_star_spawner import system_star_spawner
 from src.ecs.systems.s_rendering import system_rendering
 import json
 import pygame
@@ -24,6 +26,8 @@ class GameEngine:
     def _load_config_files(self):
         with open("assets/cfg/window.json", encoding="utf-8") as window_file:
             self.window_cfg = json.load(window_file)
+        with open("assets/cfg/starfield.json", encoding="utf-8") as starfield_file:
+            self.star_cfg = json.load(starfield_file)
 
     def run(self) -> None:
         self._create()
@@ -37,10 +41,13 @@ class GameEngine:
         self._clean()
 
     def _create(self):
-        pass
+        system_star_spawner(self.ecs_world, self.star_cfg, self.window_cfg["size"])
 
     def _calculate_time(self):
-        pass
+        self.clock.tick(self.framerate)
+        self.delta_time = self.clock.get_time() / 1000.0
+        if self.delta_time > 1/30:
+         self.delta_time= 1/30
 
     def _process_events(self):
         for event in pygame.event.get():
@@ -48,7 +55,8 @@ class GameEngine:
                 self.is_running = False
 
     def _update(self):
-        pass
+        system_movement(self.ecs_world, self.delta_time)
+        self.ecs_world._clear_dead_entities()
 
     def _draw(self):
         self.screen.fill(self.bg_color)
