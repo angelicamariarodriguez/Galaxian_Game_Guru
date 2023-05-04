@@ -20,8 +20,9 @@ def system_star_spawner(world:esper.World, star_info:dict, window_info:dict):
         pos = pygame.Vector2(random.randint(0, window_info["w"]), random.randint(0, window_info["h"]))
         vel = pygame.Vector2(0, random.randint(star_info["vertical_speed"]["min"], star_info["vertical_speed"]["max"]))
         color = random.choice(color_list)
+        blink_rate = random.randint(star_info["blink_rate"]["min"]*100, star_info["blink_rate"]["max"]*100)/100
         
-        create_star(world,size,pos,vel,color)
+        create_star(world,size,pos,vel,color, blink_rate)
 
 
 

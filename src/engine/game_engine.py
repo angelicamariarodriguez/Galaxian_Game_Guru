@@ -57,7 +57,7 @@ class GameEngine:
 
     def _update(self):
         system_movement(self.ecs_world, self.delta_time)
-        system_star_controller(self.ecs_world,self.screen, self.star_cfg)
+        system_star_controller(self.ecs_world,self.screen, self.delta_time)
         self.ecs_world._clear_dead_entities()
 
     def _draw(self):
