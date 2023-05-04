@@ -1,3 +1,4 @@
+from src.ecs.components.tags.c_tag_star import CTagStar
 import pygame
 import esper
 from src.ecs.components.c_surface import CSurface
@@ -13,4 +14,6 @@ def create_star(world: esper.World, size: pygame.Vector2,
                         CTransform(pos))
     world.add_component(cuad_entity,
                         CVelocity(vel))
+    world.add_component(cuad_entity,
+                        CTagStar())
     return cuad_entity

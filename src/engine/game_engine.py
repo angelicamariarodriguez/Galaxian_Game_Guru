@@ -1,3 +1,4 @@
+from src.ecs.systems.s_star_controller import system_star_controller
 from src.ecs.systems.s_movement import system_movement
 from src.ecs.systems.s_star_spawner import system_star_spawner
 from src.ecs.systems.s_rendering import system_rendering
@@ -56,6 +57,7 @@ class GameEngine:
 
     def _update(self):
         system_movement(self.ecs_world, self.delta_time)
+        system_star_controller(self.ecs_world,self.screen, self.star_cfg)
         self.ecs_world._clear_dead_entities()
 
     def _draw(self):
