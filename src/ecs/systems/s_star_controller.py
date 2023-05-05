@@ -4,7 +4,7 @@ from src.ecs.components.c_transform import CTransform
 import esper
 import pygame
 
-def system_star_controller(world:esper.World, screen:pygame.Surface, delta_time:float):
+def system_star_controller(world:esper.World, screen:pygame.Surface, delta_time:float, window_bg_color:pygame.Color):
     screen_rect = screen.get_rect()
     components = world.get_components(CTransform, CSurface, CTagStar)
 
@@ -19,7 +19,7 @@ def system_star_controller(world:esper.World, screen:pygame.Surface, delta_time:
         if c_e.blink_time>c_e.blink_rate and c_e.show:
             c_e.blink_time=0.0
             c_e.show = False
-            fill(c_s.surf, pygame.Color(0,0,0))
+            fill(c_s.surf, window_bg_color)
             
         elif c_e.blink_time>c_e.blink_rate and not c_e.show: 
             c_e.blink_time=0.0
