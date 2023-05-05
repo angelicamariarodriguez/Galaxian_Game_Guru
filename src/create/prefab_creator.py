@@ -17,3 +17,14 @@ def create_star(world: esper.World, size: pygame.Vector2,
     world.add_component(cuad_entity,
                         CTagStar(blink_rate, col))
     return cuad_entity
+
+def create_sprite(world: esper.World, pos: pygame.Vector2, vel: pygame.Vector2,
+                  surface: pygame.Surface) -> int:
+    sprite_entity = world.create_entity()
+    world.add_component(sprite_entity,
+                        CTransform(pos))
+    world.add_component(sprite_entity,
+                        CVelocity(vel))
+    world.add_component(sprite_entity,
+                        CSurface.from_surface(surface))
+    return sprite_entity
