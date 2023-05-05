@@ -1,7 +1,9 @@
+from src.ecs.systems.s_enemy_spawner import system_enemy_spawner
 from src.ecs.systems.s_star_controller import system_star_controller
 from src.ecs.systems.s_movement import system_movement
 from src.ecs.systems.s_star_spawner import system_star_spawner
 from src.ecs.systems.s_rendering import system_rendering
+from src.ecs.systems.s_animation import system_animation
 import json
 import pygame
 import esper
@@ -29,6 +31,10 @@ class GameEngine:
             self.window_cfg = json.load(window_file)
         with open("assets/cfg/starfield.json", encoding="utf-8") as starfield_file:
             self.star_cfg = json.load(starfield_file)
+        with open("assets/cfg/enemies.json", encoding="utf-8") as enemies_file:
+            self.enemy_cfg = json.load(enemies_file)
+        with open("assets/cfg/level_01.json", encoding="utf-8") as level_file:
+            self.level_cfg = json.load(level_file)
 
     def run(self) -> None:
         self._create()
@@ -43,6 +49,7 @@ class GameEngine:
 
     def _create(self):
         system_star_spawner(self.ecs_world, self.star_cfg, self.window_cfg["size"])
+        system_enemy_spawner(self.ecs_world,self.enemy_cfg, self.level_cfg["enemy_spawn_events"])
 
     def _calculate_time(self):
         self.clock.tick(self.framerate)
@@ -58,6 +65,8 @@ class GameEngine:
     def _update(self):
         system_movement(self.ecs_world, self.delta_time)
         system_star_controller(self.ecs_world,self.screen, self.delta_time, self.bg_color)
+
+        system_animation(self.ecs_world, self.delta_time)
         self.ecs_world._clear_dead_entities()
 
     def _draw(self):
