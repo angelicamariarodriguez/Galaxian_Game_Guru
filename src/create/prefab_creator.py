@@ -35,9 +35,9 @@ def create_sprite(world: esper.World, pos: pygame.Vector2, vel: pygame.Vector2,
 
 def create_enemy(world: esper.World, pos: pygame.Vector2, enemy_info: dict, enemy_type:str):
     enemy_surface = ServiceLocator.images_services.get(enemy_info[enemy_type]["image"])
-    vel = pygame.Vector2(0,0)
+    vel = pygame.Vector2(enemy_info["enemy_speed"],0)
     enemy_entity = create_sprite(world, pos, vel, enemy_surface)
     
     world.add_component(enemy_entity,
                         CAnimation(enemy_info[enemy_type]["animations"]))
-    world.add_component(enemy_entity, CTagEnemy(enemy_type))
+    world.add_component(enemy_entity, CTagEnemy())

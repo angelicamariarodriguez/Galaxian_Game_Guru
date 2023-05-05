@@ -1,3 +1,4 @@
+from src.ecs.systems.s_enemy_screen_bouncer import system_enemy_screen_bouncer
 from src.ecs.systems.s_enemy_spawner import system_enemy_spawner
 from src.ecs.systems.s_star_controller import system_star_controller
 from src.ecs.systems.s_movement import system_movement
@@ -21,6 +22,7 @@ class GameEngine:
         self.is_running = False
         self.framerate = self.window_cfg["framerate"]
         self.delta_time = 0
+        self.enemy_movement_right = True
         self.bg_color = pygame.Color(self.window_cfg["bg_color"]["r"],
                                      self.window_cfg["bg_color"]["g"],
                                      self.window_cfg["bg_color"]["b"])
@@ -65,6 +67,7 @@ class GameEngine:
     def _update(self):
         system_movement(self.ecs_world, self.delta_time)
         system_star_controller(self.ecs_world,self.screen, self.delta_time, self.bg_color)
+        self.enemy_movement_right = system_enemy_screen_bouncer(self.ecs_world, self.screen, self.enemy_movement_right, self.enemy_cfg["enemy_speed"])
 
         system_animation(self.ecs_world, self.delta_time)
         self.ecs_world._clear_dead_entities()

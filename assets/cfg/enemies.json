@@ -1,4 +1,4 @@
-{
+{   "enemy_speed":10,
     "Enemy_01": {
         "sound":"assets/snd/enemy_launch.ogg",
         "image": "assets/img/invaders_enemy_01.png",
@@ -9,7 +9,7 @@
                     "name": "MOVE",
                     "start": 0,
                     "end": 4,
-                    "framerate": 4
+                    "framerate": 3
                 }
             ]
         }
@@ -25,7 +25,7 @@
                     "name": "MOVE",
                     "start": 0,
                     "end": 4,
-                    "framerate": 4
+                    "framerate": 3
                 }
             ]
         }
@@ -41,7 +41,7 @@
                     "name": "MOVE",
                     "start": 0,
                     "end": 4,
-                    "framerate": 4
+                    "framerate": 3
                 }
             ]
         }
