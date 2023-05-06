@@ -14,15 +14,13 @@ def system_enemy_screen_bouncer(world:esper.World, screen:pygame.Surface, moveme
     for _, (c_t, c_v, c_s, c_e) in components:
         
         
-        cuad_rect = c_s.area.copy()
-        cuad_rect.topleft = c_t.pos
+        cuad_rect = CSurface.get_area_relative(c_s.area, c_t.pos)
         
         if temp_mov:
             c_v.vel.x = enemy_speed
-
         else:
             c_v.vel.x = enemy_speed*-1
-        
+            
         if not temp_mov and  cuad_rect.left < 10:          
             temp_mov= True
         elif temp_mov and  cuad_rect.right > screen_rect.width-10:
