@@ -41,3 +41,6 @@ def create_enemy(world: esper.World, pos: pygame.Vector2, enemy_info: dict, enem
     world.add_component(enemy_entity,
                         CAnimation(enemy_info[enemy_type]["animations"]))
     world.add_component(enemy_entity, CTagEnemy())
+
+    
+    

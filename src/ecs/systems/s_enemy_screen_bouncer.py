@@ -9,9 +9,9 @@ from src.ecs.components.tags.c_tag_enemy import CTagEnemy
 def system_enemy_screen_bouncer(world:esper.World, screen:pygame.Surface, movement_right:bool, enemy_speed:int):
     screen_rect = screen.get_rect()
     components = world.get_components(CTransform, CVelocity, CSurface, CTagEnemy)
-    temp_mov:bool =movement_right
+    temp_mov=movement_right
     
-    for enemy_entity, (c_t, c_v, c_s, c_e) in components:
+    for _, (c_t, c_v, c_s, c_e) in components:
         
         
         cuad_rect = c_s.area.copy()
@@ -30,4 +30,4 @@ def system_enemy_screen_bouncer(world:esper.World, screen:pygame.Surface, moveme
         else:
             temp_mov = temp_mov
         
-        return temp_mov
+    return temp_mov
