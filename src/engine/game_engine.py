@@ -1,3 +1,4 @@
+from src.ecs.systems.s_enemy_basic_firing import system_enemy_basic_firing
 from src.ecs.systems.s_enemy_screen_bouncer import system_enemy_screen_bouncer
 from src.ecs.systems.s_enemy_spawner import system_enemy_spawner
 from src.ecs.systems.s_star_controller import system_star_controller
@@ -37,6 +38,8 @@ class GameEngine:
             self.enemy_cfg = json.load(enemies_file)
         with open("assets/cfg/level_01.json", encoding="utf-8") as level_file:
             self.level_cfg = json.load(level_file)
+        with open("assets/cfg/bullets.json", encoding="utf-8") as bullets_file:
+            self.bullet_cfg = json.load(bullets_file)
 
     def run(self) -> None:
         self._create()
@@ -67,8 +70,10 @@ class GameEngine:
     def _update(self):
         system_movement(self.ecs_world, self.delta_time)
         system_star_controller(self.ecs_world,self.screen, self.delta_time, self.bg_color)
+        system_enemy_basic_firing(self.ecs_world, self.bullet_cfg["enemy_bullet"])
         self.enemy_movement_right = system_enemy_screen_bouncer(self.ecs_world, self.screen, self.enemy_movement_right, self.enemy_cfg["enemy_speed"])
-
+        
+        
         system_animation(self.ecs_world, self.delta_time)
         self.ecs_world._clear_dead_entities()
 
