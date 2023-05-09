@@ -5,6 +5,8 @@ class CSurface:
         self.surf = pygame.Surface(size)
         self.surf.fill(color)
         self.area = self.surf.get_rect()
+        self.color = color
+        self.visible = True
 
     @classmethod
     def from_surface(cls, surface:pygame.Surface):
