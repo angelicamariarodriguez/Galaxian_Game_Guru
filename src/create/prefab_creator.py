@@ -9,6 +9,7 @@ from src.ecs.components.tags.c_tag_star import CTagStar
 from src.ecs.components.tags.c_tag_enemy import CTagEnemy
 from src.ecs.components.c_animation import CAnimation
 from src.ecs.components.tags.c_tag_bullet import CTagBullet
+from src.ecs.components.c_input_command import CInputCommand
 
 def create_square(world: esper.World, size: pygame.Vector2,
                   pos: pygame.Vector2, vel: pygame.Vector2, col: pygame.Color) -> int:
@@ -68,4 +69,11 @@ def create_bullet(world: esper.World,
                              start_pos.y+shooter_size[1])
     bullet_entity = create_square(world,bullet_size,start_pos,vel,color)
     world.add_component(bullet_entity, CTagBullet())
+
+def create_input_player(world: esper.World):
+   
+    input_pause = world.create_entity()
+   
+    world.add_component(input_pause,
+                        CInputCommand("GAME_PAUSE", pygame.K_p))
     
