@@ -75,11 +75,11 @@ class GameEngine:
 
     def _update(self):
         
-        
+        system_movement(self.ecs_world, self.delta_time,self._paused)
         system_star_controller(self.ecs_world,self.screen, self.delta_time, self.bg_color)
         
         if not self._paused:
-            system_movement(self.ecs_world, self.delta_time)
+            
             system_enemy_basic_firing(self.ecs_world, self.bullet_cfg["enemy_bullet"])
             self.enemy_movement_right = system_enemy_screen_bouncer(self.ecs_world, self.screen, self.enemy_movement_right, self.enemy_cfg["enemy_speed"])
             
