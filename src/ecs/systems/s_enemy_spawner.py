@@ -5,6 +5,9 @@ import pygame
 def system_enemy_spawner(world:esper.World, enemies_info:dict, level_info:list):
    
     for enemy_row in level_info:
+
+
+        
         
         for  i in range(enemy_row["columns"]):
             if enemy_row["enemy_type"]=="Enemy_01":

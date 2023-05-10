@@ -87,7 +87,7 @@ class GameEngine:
         
         system_movement(self.ecs_world, self.delta_time,self._paused)
         system_star_controller(self.ecs_world,self.screen, self.delta_time, self.bg_color)
-        self.paused_time= system_pause_text_blinker(self.ecs_world, self.p_txt_s, self._paused, self.paused_time,self.delta_time )
+        self.paused_time= system_pause_text_blinker(self.p_txt_s, self._paused, self.paused_time,self.delta_time )
         
         if not self._paused:
             
