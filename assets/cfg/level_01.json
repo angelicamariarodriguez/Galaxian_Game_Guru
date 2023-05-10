@@ -3,51 +3,27 @@
     "enemy_spawn_events": [
         {
             "columns": 2,
-            "enemy_type": "Enemy_04",
-            "position": {
-                "x": 90,
-                "y": 15
-            }
+            "enemy_type": "Enemy_04"
         },
         {
             "columns": 6,
-            "enemy_type": "Enemy_03",
-            "position": {
-                "x": 70,
-                "y": 30
-            }
+            "enemy_type": "Enemy_03"
         },
         {
             "columns": 8,
-            "enemy_type": "Enemy_02",
-            "position": {
-                "x": 50,
-                "y": 45
-            }
+            "enemy_type": "Enemy_02"
         },
         {
             "columns": 10,
-            "enemy_type": "Enemy_01",
-            "position": {
-                "x": 30,
-                "y": 60
-            }
+            "enemy_type": "Enemy_01"
         },
         {
             "columns": 10,
-            "enemy_type": "Enemy_01",
-            "position": {
-                "x": 30,
-                "y": 75
-            }
+            "enemy_type": "Enemy_01"
         },
         {
             "columns": 10,
-            "enemy_type": "Enemy_01",
-            "position": {
-                "x": 30,
-                "y": 90
-            }
+            "enemy_type": "Enemy_01"
         }
     ]
     
