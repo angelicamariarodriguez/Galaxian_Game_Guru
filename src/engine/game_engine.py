@@ -3,6 +3,9 @@ from src.ecs.components.c_input_command import CInputCommand, CommandPhase
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
+from src.ecs.components.tags.c_tag_player_bullet import CTagPlayerBullet
+from src.ecs.systems.s_collision_enemy_bullet_with_player import system_collision_enemy_bullet_with_player
+from src.ecs.systems.s_collision_player_bullet_with_enemy import system_collision_player_bullet_with_enemy
 from src.ecs.systems.s_enemy_basic_firing import system_enemy_basic_firing
 from src.ecs.systems.s_enemy_screen_bouncer import system_enemy_screen_bouncer
 from src.ecs.systems.s_enemy_spawner import system_enemy_spawner
@@ -35,6 +38,7 @@ class GameEngine:
                                      self.window_cfg["bg_color"]["g"],
                                      self.window_cfg["bg_color"]["b"])
         self.ecs_world = esper.World()
+
 
     def _load_config_files(self):
         with open("assets/cfg/window.json", encoding="utf-8") as window_file:
@@ -87,12 +91,13 @@ class GameEngine:
         system_movement(self.ecs_world, self.delta_time)
         system_star_controller(self.ecs_world,self.screen, self.delta_time, self.bg_color)
         system_enemy_basic_firing(self.ecs_world, self.bullet_cfg["enemy_bullet"])
-        self.enemy_movement_right = system_enemy_screen_bouncer(self.ecs_world, self.screen, self.enemy_movement_right, self.enemy_cfg["enemy_speed"])
-        
-        
+        system_collision_player_bullet_with_enemy(self.ecs_world)
+        system_collision_enemy_bullet_with_player(self.ecs_world, self._player_entity)
+        self.enemy_movement_right = system_enemy_screen_bouncer(self.ecs_world, self.screen, self.enemy_movement_right, self.enemy_cfg["enemy_speed"])      
         system_animation(self.ecs_world, self.delta_time)
         self.ecs_world._clear_dead_entities()
-
+        self.bullets_alive = len(self.ecs_world.get_component(CTagPlayerBullet))
+       
     def _draw(self):
         self.screen.fill(self.bg_color)
         system_rendering(self.ecs_world, self.screen)
@@ -113,7 +118,7 @@ class GameEngine:
                 self._player_c_vel.vel.x += self.player_cfg["input_velocity"]
             elif c_input.phase == CommandPhase.END:
                 self._player_c_vel.vel.x -= self.player_cfg["input_velocity"]
-        if c_input.name == "PLAYER_FIRE":
+        if c_input.name == "PLAYER_FIRE" and self.bullets_alive == 0:
             if c_input.phase == CommandPhase.START:
                 create_player_bullet(self.ecs_world, 
                               self._player_c_trans.pos, 

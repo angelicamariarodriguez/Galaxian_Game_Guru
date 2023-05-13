@@ -5,12 +5,14 @@ from src.ecs.components.c_input_command import CInputCommand
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.c_velocity import CVelocity
+from src.ecs.components.tags.c_tag_enemy_bullet import CTagEnemyBullet
 from src.ecs.components.tags.c_tag_player import CTagPlayer
+from src.ecs.components.tags.c_tag_player_bullet import CTagPlayerBullet
 from src.engine.service_locator import ServiceLocator
 from src.ecs.components.tags.c_tag_star import CTagStar
 from src.ecs.components.tags.c_tag_enemy import CTagEnemy
 from src.ecs.components.c_animation import CAnimation
-from src.ecs.components.tags.c_tag_bullet import CTagBullet
+
 
 def create_square(world: esper.World, size: pygame.Vector2,
                   pos: pygame.Vector2, vel: pygame.Vector2, col: pygame.Color) -> int:
@@ -69,7 +71,7 @@ def create_bullet(world: esper.World,
     start_pos=pygame.Vector2(start_pos.x+shooter_size[0]/2,
                              start_pos.y+shooter_size[1])
     bullet_entity = create_square(world,bullet_size,start_pos,vel,color)
-    world.add_component(bullet_entity, CTagBullet())
+    world.add_component(bullet_entity, CTagEnemyBullet())
 
 def create_player_bullet(world: esper.World,
                   start_pos: pygame.Vector2,
@@ -84,7 +86,7 @@ def create_player_bullet(world: esper.World,
     start_pos=pygame.Vector2(start_pos.x+shooter_size[0]/2,
                              start_pos.y+shooter_size[1])
     bullet_entity = create_square(world,bullet_size,start_pos,vel,color)
-    world.add_component(bullet_entity, CTagBullet())
+    world.add_component(bullet_entity, CTagPlayerBullet())
 
 def create_player_square(world:esper.World, player_info:dict) -> int:
     player_surface = ServiceLocator.images_services.get(player_info["image"])
