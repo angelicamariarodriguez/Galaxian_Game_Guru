@@ -1,6 +1,13 @@
+from src.create.prefab_creator import create_input_player, create_player_square
+from src.ecs.components.c_input_command import CInputCommand, CommandPhase
+from src.ecs.components.c_surface import CSurface
+from src.ecs.components.c_transform import CTransform
+from src.ecs.components.c_velocity import CVelocity
 from src.ecs.systems.s_enemy_basic_firing import system_enemy_basic_firing
 from src.ecs.systems.s_enemy_screen_bouncer import system_enemy_screen_bouncer
 from src.ecs.systems.s_enemy_spawner import system_enemy_spawner
+from src.ecs.systems.s_input_player import system_input_player
+from src.ecs.systems.s_limit_player import system_limit_player
 from src.ecs.systems.s_star_controller import system_star_controller
 from src.ecs.systems.s_movement import system_movement
 from src.ecs.systems.s_star_spawner import system_star_spawner
@@ -40,6 +47,8 @@ class GameEngine:
             self.level_cfg = json.load(level_file)
         with open("assets/cfg/bullets.json", encoding="utf-8") as bullets_file:
             self.bullet_cfg = json.load(bullets_file)
+        with open("assets/cfg/player.json") as player_file:
+            self.player_cfg = json.load(player_file)
 
     def run(self) -> None:
         self._create()
@@ -53,6 +62,11 @@ class GameEngine:
         self._clean()
 
     def _create(self):
+        self._player_entity = create_player_square(self.ecs_world, self.player_cfg)
+        self._player_c_vel = self.ecs_world.component_for_entity(self._player_entity, CVelocity)
+        self._player_c_trans = self.ecs_world.component_for_entity(self._player_entity, CTransform)
+        self._player_c_s = self.ecs_world.component_for_entity(self._player_entity, CSurface)
+        create_input_player(self.ecs_world)
         system_star_spawner(self.ecs_world, self.star_cfg, self.window_cfg["size"])
         system_enemy_spawner(self.ecs_world,self.enemy_cfg, self.level_cfg["enemy_spawn_events"])
 
@@ -64,10 +78,12 @@ class GameEngine:
 
     def _process_events(self):
         for event in pygame.event.get():
+            system_input_player(self.ecs_world, event, self._do_action)
             if event.type == pygame.QUIT:
                 self.is_running = False
 
     def _update(self):
+        system_limit_player(self.ecs_world, self._player_entity, self.screen)
         system_movement(self.ecs_world, self.delta_time)
         system_star_controller(self.ecs_world,self.screen, self.delta_time, self.bg_color)
         system_enemy_basic_firing(self.ecs_world, self.bullet_cfg["enemy_bullet"])
@@ -85,3 +101,15 @@ class GameEngine:
     def _clean(self):
         self.ecs_world.clear_database()
         pygame.quit()
+
+    def _do_action(self, c_input:CInputCommand):
+        if c_input.name == "PLAYER_LEFT":
+            if c_input.phase == CommandPhase.START:
+                self._player_c_vel.vel.x -= self.player_cfg["input_velocity"]
+            elif c_input.phase == CommandPhase.END:
+                self._player_c_vel.vel.x += self.player_cfg["input_velocity"]
+        if c_input.name == "PLAYER_RIGHT":
+            if c_input.phase == CommandPhase.START:
+                self._player_c_vel.vel.x += self.player_cfg["input_velocity"]
+            elif c_input.phase == CommandPhase.END:
+                self._player_c_vel.vel.x -= self.player_cfg["input_velocity"]
