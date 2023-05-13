@@ -71,6 +71,21 @@ def create_bullet(world: esper.World,
     bullet_entity = create_square(world,bullet_size,start_pos,vel,color)
     world.add_component(bullet_entity, CTagBullet())
 
+def create_player_bullet(world: esper.World,
+                  start_pos: pygame.Vector2,
+                  shooter_size: pygame.Vector2,
+                  bullet_info: dict):
+
+    bullet_size = pygame.Vector2(bullet_info["size"]["x"], bullet_info["size"]["y"])
+    vel = pygame.Vector2(0,bullet_info["speed"]*-1)
+    color = pygame.Color(bullet_info["color"]["r"],
+                        bullet_info["color"]["g"],
+                        bullet_info["color"]["b"])
+    start_pos=pygame.Vector2(start_pos.x+shooter_size[0]/2,
+                             start_pos.y+shooter_size[1])
+    bullet_entity = create_square(world,bullet_size,start_pos,vel,color)
+    world.add_component(bullet_entity, CTagBullet())
+
 def create_player_square(world:esper.World, player_info:dict) -> int:
     player_surface = ServiceLocator.images_services.get(player_info["image"])
     size = player_surface.get_size()

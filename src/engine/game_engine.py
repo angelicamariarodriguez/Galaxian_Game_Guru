@@ -1,4 +1,4 @@
-from src.create.prefab_creator import create_input_player, create_player_square
+from src.create.prefab_creator import create_bullet, create_input_player, create_player_bullet, create_player_square
 from src.ecs.components.c_input_command import CInputCommand, CommandPhase
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
@@ -113,3 +113,11 @@ class GameEngine:
                 self._player_c_vel.vel.x += self.player_cfg["input_velocity"]
             elif c_input.phase == CommandPhase.END:
                 self._player_c_vel.vel.x -= self.player_cfg["input_velocity"]
+        if c_input.name == "PLAYER_FIRE":
+            if c_input.phase == CommandPhase.START:
+                create_player_bullet(self.ecs_world, 
+                              self._player_c_trans.pos, 
+                              self._player_c_s.area.size, 
+                              self.bullet_cfg['player_bullet'])
+            elif c_input.phase == CommandPhase.END:
+                pass

@@ -16,6 +16,8 @@ def system_input_player(world: esper.World, event: pygame.event.Event,
         elif event.type == pygame.KEYUP and c_input.key == event.key:
             c_input.phase = CommandPhase.END
             do_action(c_input)
+  
+
 
 
 
