@@ -14,7 +14,7 @@ from src.engine.service_locator import ServiceLocator
 from src.ecs.components.tags.c_tag_star import CTagStar
 from src.ecs.components.tags.c_tag_enemy import CTagEnemy
 from src.ecs.components.c_animation import CAnimation
-from src.ecs.components.c_input_command import CInputCommand
+
 
 
 def create_square(world: esper.World, size: pygame.Vector2,
@@ -132,14 +132,15 @@ def create_input_player(world:esper.World):
     input_fire = world.create_entity()
     input_pause = world.create_entity()
    
-    world.add_component(input_pause,
-                        CInputCommand("GAME_PAUSE", pygame.K_p))
+    
     world.add_component(input_left, 
                         CInputCommand("PLAYER_LEFT", pygame.K_LEFT))
     world.add_component(input_right, 
                         CInputCommand("PLAYER_RIGHT", pygame.K_RIGHT))
     world.add_component(input_fire,
                         CInputCommand("PLAYER_FIRE", pygame.K_z))
+    world.add_component(input_pause,
+                        CInputCommand("GAME_PAUSE", pygame.K_p))
 
 def create_explosion(world: esper.World, pos: pygame.Vector2, explosion_info: dict):
     explosion_surface = ServiceLocator.images_services.get(explosion_info["image"])

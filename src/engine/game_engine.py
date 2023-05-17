@@ -1,5 +1,5 @@
 from src.ecs.systems.s_pause_text_blinker import system_pause_text_blinker
-from src.create.prefab_creator import create_bullet, create_input_player, create_player_bullet, create_player_square
+from src.create.prefab_creator import create_input_player, create_player_bullet, create_player_square
 from src.ecs.components.c_input_command import CInputCommand, CommandPhase
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
@@ -18,8 +18,6 @@ from src.ecs.systems.s_movement import system_movement
 from src.ecs.systems.s_star_spawner import system_star_spawner
 from src.ecs.systems.s_rendering import system_rendering
 from src.ecs.systems.s_animation import system_animation
-from src.ecs.components.c_input_command import CInputCommand, CommandPhase
-from src.ecs.systems.s_input_player import system_input_player
 from src.create.prefab_creator import TextAlignment, create_text
 import json
 import pygame
@@ -83,7 +81,6 @@ class GameEngine:
         create_input_player(self.ecs_world)
         system_star_spawner(self.ecs_world, self.star_cfg, self.window_cfg["size"])
         system_enemy_spawner(self.ecs_world,self.enemy_cfg, self.level_cfg["enemy_spawn_events"])
-        create_input_player(self.ecs_world)
         paused_text_ent = create_text(self.ecs_world, "PAUSE", 8, 
                     pygame.Color(255, 50, 50), pygame.Vector2(self.window_cfg["size"]["w"]/2, self.window_cfg["size"]["h"]/2), 
                     TextAlignment.CENTER)
@@ -142,6 +139,7 @@ class GameEngine:
             
 
     def _do_action(self, c_input:CInputCommand):
+        
         if c_input.name == "PLAYER_LEFT":
             if c_input.phase == CommandPhase.START:
                 self._player_c_vel.vel.x -= self.player_cfg["input_velocity"]
@@ -160,6 +158,9 @@ class GameEngine:
                               self.bullet_cfg['player_bullet'])
             elif c_input.phase == CommandPhase.END:
                 pass
-        if c_input.name == "GAME_PAUSE" and c_input.phase == CommandPhase.START:
+        if c_input.name == "GAME_PAUSE" and c_input.phase == CommandPhase.START:  
+        
             self._paused = not self._paused
+            
+        
             
