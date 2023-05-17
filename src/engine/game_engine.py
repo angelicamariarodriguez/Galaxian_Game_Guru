@@ -43,6 +43,7 @@ class GameEngine:
         self.ecs_world = esper.World()
         self._paused = False
         self.paused_time=0.0
+        self.player_score = 0
 
 
     def _load_config_files(self):
@@ -81,6 +82,11 @@ class GameEngine:
         create_input_player(self.ecs_world)
         system_star_spawner(self.ecs_world, self.star_cfg, self.window_cfg["size"])
         system_enemy_spawner(self.ecs_world,self.enemy_cfg, self.level_cfg["enemy_spawn_events"])
+        create_text(self.ecs_world, "1UP", 8, 
+                    pygame.Color(255, 50, 50), pygame.Vector2(30, 5), 
+                    TextAlignment.CENTER)
+        
+        
         paused_text_ent = create_text(self.ecs_world, "PAUSE", 8, 
                     pygame.Color(255, 50, 50), pygame.Vector2(self.window_cfg["size"]["w"]/2, self.window_cfg["size"]["h"]/2), 
                     TextAlignment.CENTER)
@@ -108,32 +114,39 @@ class GameEngine:
         
         if not self._paused:
             
+            
             system_enemy_basic_firing(self.ecs_world, self.bullet_cfg["enemy_bullet"])
             self.enemy_movement_right = system_enemy_screen_bouncer(self.ecs_world, self.screen, self.enemy_movement_right, self.enemy_cfg["enemy_speed"])
             
             system_animation(self.ecs_world, self.delta_time)
             system_enemy_basic_firing(self.ecs_world, self.bullet_cfg["enemy_bullet"])
-            system_collision_player_bullet_with_enemy(self.ecs_world, self.explosion_cfg)
+            self.player_score+= system_collision_player_bullet_with_enemy(self.ecs_world, self.explosion_cfg)
+            
             system_collision_enemy_bullet_with_player(self.ecs_world, self._player_entity, self.explosion_cfg)
             system_end_explosion(self.ecs_world)
+            self.bullets_alive = len(self.ecs_world.get_component(CTagPlayerBullet))
             
             self.p_txt_s.visible = self._paused
             self.paused_time=0
-        
+            self.score_text=create_text(self.ecs_world, str(self.player_score), 8, 
+                    pygame.Color(255, 255, 255), pygame.Vector2(40, 15), 
+                    TextAlignment.CENTER)
 
-        
+     
         
         self.ecs_world._clear_dead_entities()
-        self.bullets_alive = len(self.ecs_world.get_component(CTagPlayerBullet))
+        
        
     def _draw(self):
         self.screen.fill(self.bg_color)
         system_rendering(self.ecs_world, self.screen)
+        
         pygame.display.flip()
 
     def _clean(self):
         self.ecs_world.clear_database()
         self._paused = False
+        
         pygame.quit()
            
             

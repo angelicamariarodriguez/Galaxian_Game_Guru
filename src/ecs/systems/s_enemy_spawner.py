@@ -20,7 +20,7 @@ def system_enemy_spawner(world:esper.World, enemies_info:dict, level_info:list):
         else: 
             pos_x = 90  
 
-        pos_y=15+15*row
+        pos_y=25+15*row
         for  i in range(columns):
             pos_adjust=20*i 
             if columns==2 and i>0:

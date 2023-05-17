@@ -26,3 +26,5 @@ class CSurface:
         c_surf.surf = font.render(text, True, color)
         c_surf.area = c_surf.surf.get_rect()
         return c_surf
+
+    

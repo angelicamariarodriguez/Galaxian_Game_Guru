@@ -59,7 +59,7 @@ def create_enemy(world: esper.World, pos: pygame.Vector2, enemy_info: dict, enem
     
     world.add_component(enemy_entity,
                         CAnimation(enemy_info[enemy_type]["animations"]))
-    world.add_component(enemy_entity, CTagEnemy())
+    world.add_component(enemy_entity, CTagEnemy(enemy_info[enemy_type]["score"]))
 
 def create_bullet(world: esper.World,
                   start_pos: pygame.Vector2,
@@ -99,7 +99,7 @@ def create_text(world:esper.World, txt:str, size:int,
     world.add_component(text_entity,
                         CTransform(pos + origin))
     return text_entity
-    world.add_component(bullet_entity, CTagEnemyBullet())
+    
 
 def create_player_bullet(world: esper.World,
                   start_pos: pygame.Vector2,

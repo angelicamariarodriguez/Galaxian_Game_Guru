@@ -9,7 +9,7 @@ from src.ecs.components.tags.c_tag_player_bullet import CTagPlayerBullet
 def system_collision_player_bullet_with_enemy(world: esper.World, explosion_info:dict):
     components_enemy = world.get_components(CSurface, CTransform, CTagEnemy)
     components_bullet = world.get_components(CSurface, CTransform, CTagPlayerBullet)
-
+    score=0
     for enemy_entity, (c_s, c_t, c_ene) in components_enemy:
         ene_rect = c_s.area.copy()
         ene_rect.topleft = c_t.pos
@@ -20,8 +20,9 @@ def system_collision_player_bullet_with_enemy(world: esper.World, explosion_info
                 world.delete_entity(enemy_entity)
                 world.delete_entity(bullet_entity)
                 create_explosion(world, c_t.pos, explosion_info)
+                score = c_ene.score
         
-               
+    return score           
 
 
          
