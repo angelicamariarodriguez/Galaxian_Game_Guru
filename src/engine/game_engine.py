@@ -1,3 +1,4 @@
+from src.ecs.systems.s_top_ui_diplay import system_top_ui_display
 from src.ecs.systems.s_display_game_start import system_display_game_start
 from src.ecs.systems.s_display_score import system_display_score
 from src.ecs.systems.s_pause_text_blinker import system_pause_text_blinker
@@ -86,22 +87,9 @@ class GameEngine:
         self._player_c_s = self.ecs_world.component_for_entity(self._player_entity, CSurface)
         create_input_player(self.ecs_world)
         system_star_spawner(self.ecs_world, self.star_cfg, self.window_cfg["size"])
-        
-        create_text(self.ecs_world, "1UP", 8, 
-                    pygame.Color(255, 50, 50), pygame.Vector2(30, 5), 
-                    TextAlignment.CENTER)
-        self.score_text_entity= create_text(self.ecs_world, str(self.player_score), 8, 
-                    pygame.Color(255, 255, 255), pygame.Vector2(40, 15), 
-                    TextAlignment.CENTER)
-        
-        
-        paused_text_ent = create_text(self.ecs_world, "PAUSE", 8, 
-                    pygame.Color(255, 50, 50), pygame.Vector2(self.window_cfg["size"]["w"]/2, self.window_cfg["size"]["h"]/2), 
-                    TextAlignment.CENTER)
+       
 
-        self.game_start_text_ent = create_text(self.ecs_world, "GAME START", 8, 
-                    pygame.Color(255, 255, 255), pygame.Vector2(self.window_cfg["size"]["w"]/2, self.window_cfg["size"]["h"]/2), 
-                    TextAlignment.CENTER)
+        self.score_text_entity, paused_text_ent, self.game_start_text_ent, self.level_text_entity = system_top_ui_display(self.ecs_world, self.window_cfg)
         self.p_txt_s = self.ecs_world.component_for_entity(paused_text_ent, CSurface)
         self.p_txt_s.visible = self._paused
 
