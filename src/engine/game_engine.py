@@ -1,3 +1,4 @@
+from src.ecs.systems.s_display_score import system_display_score
 from src.ecs.systems.s_pause_text_blinker import system_pause_text_blinker
 from src.create.prefab_creator import create_input_player, create_player_bullet, create_player_square
 from src.ecs.components.c_input_command import CInputCommand, CommandPhase
@@ -85,6 +86,9 @@ class GameEngine:
         create_text(self.ecs_world, "1UP", 8, 
                     pygame.Color(255, 50, 50), pygame.Vector2(30, 5), 
                     TextAlignment.CENTER)
+        self.score_text_entity= create_text(self.ecs_world, str(self.player_score), 8, 
+                    pygame.Color(255, 255, 255), pygame.Vector2(40, 15), 
+                    TextAlignment.CENTER)
         
         
         paused_text_ent = create_text(self.ecs_world, "PAUSE", 8, 
@@ -121,6 +125,7 @@ class GameEngine:
             system_animation(self.ecs_world, self.delta_time)
             system_enemy_basic_firing(self.ecs_world, self.bullet_cfg["enemy_bullet"])
             self.player_score+= system_collision_player_bullet_with_enemy(self.ecs_world, self.explosion_cfg)
+            self.score_text_entity = system_display_score(self.ecs_world,self.score_text_entity, self.player_score)
             
             system_collision_enemy_bullet_with_player(self.ecs_world, self._player_entity, self.explosion_cfg)
             system_end_explosion(self.ecs_world)
@@ -128,9 +133,7 @@ class GameEngine:
             
             self.p_txt_s.visible = self._paused
             self.paused_time=0
-            self.score_text=create_text(self.ecs_world, str(self.player_score), 8, 
-                    pygame.Color(255, 255, 255), pygame.Vector2(40, 15), 
-                    TextAlignment.CENTER)
+            
 
      
         
