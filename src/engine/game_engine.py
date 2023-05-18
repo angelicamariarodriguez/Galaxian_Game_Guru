@@ -1,3 +1,4 @@
+from src.ecs.systems.s_display_game_start import system_display_game_start
 from src.ecs.systems.s_display_score import system_display_score
 from src.ecs.systems.s_pause_text_blinker import system_pause_text_blinker
 from src.create.prefab_creator import create_input_player, create_player_bullet, create_player_square
@@ -45,6 +46,9 @@ class GameEngine:
         self._paused = False
         self.paused_time=0.0
         self.player_score = 0
+        self._game_start = True
+        self.game_start_time = 0.0
+        self.level_enemies_spawned = False
 
 
     def _load_config_files(self):
@@ -82,7 +86,7 @@ class GameEngine:
         self._player_c_s = self.ecs_world.component_for_entity(self._player_entity, CSurface)
         create_input_player(self.ecs_world)
         system_star_spawner(self.ecs_world, self.star_cfg, self.window_cfg["size"])
-        system_enemy_spawner(self.ecs_world,self.enemy_cfg, self.level_cfg["enemy_spawn_events"])
+        
         create_text(self.ecs_world, "1UP", 8, 
                     pygame.Color(255, 50, 50), pygame.Vector2(30, 5), 
                     TextAlignment.CENTER)
@@ -93,6 +97,10 @@ class GameEngine:
         
         paused_text_ent = create_text(self.ecs_world, "PAUSE", 8, 
                     pygame.Color(255, 50, 50), pygame.Vector2(self.window_cfg["size"]["w"]/2, self.window_cfg["size"]["h"]/2), 
+                    TextAlignment.CENTER)
+
+        self.game_start_text_ent = create_text(self.ecs_world, "GAME START", 8, 
+                    pygame.Color(255, 255, 255), pygame.Vector2(self.window_cfg["size"]["w"]/2, self.window_cfg["size"]["h"]/2), 
                     TextAlignment.CENTER)
         self.p_txt_s = self.ecs_world.component_for_entity(paused_text_ent, CSurface)
         self.p_txt_s.visible = self._paused
@@ -105,7 +113,8 @@ class GameEngine:
 
     def _process_events(self):
         for event in pygame.event.get():
-            system_input_player(self.ecs_world, event, self._do_action)
+            if not self._game_start:
+                system_input_player(self.ecs_world, event, self._do_action)
             if event.type == pygame.QUIT:
                 self.is_running = False
 
@@ -115,25 +124,32 @@ class GameEngine:
         system_star_controller(self.ecs_world,self.screen, self.delta_time, self.bg_color)
         self.paused_time= system_pause_text_blinker(self.p_txt_s, self._paused, self.paused_time,self.delta_time )
         system_limit_player(self.ecs_world, self._player_entity, self.screen)
+        if self._game_start:
+            self.game_start_time, self._game_start = system_display_game_start(self.ecs_world,self.game_start_text_ent,self.game_start_time, self.delta_time)
         
-        if not self._paused:
-            
-            
-            system_enemy_basic_firing(self.ecs_world, self.bullet_cfg["enemy_bullet"])
-            self.enemy_movement_right = system_enemy_screen_bouncer(self.ecs_world, self.screen, self.enemy_movement_right, self.enemy_cfg["enemy_speed"])
-            
-            system_animation(self.ecs_world, self.delta_time)
-            system_enemy_basic_firing(self.ecs_world, self.bullet_cfg["enemy_bullet"])
-            self.player_score+= system_collision_player_bullet_with_enemy(self.ecs_world, self.explosion_cfg)
-            self.score_text_entity = system_display_score(self.ecs_world,self.score_text_entity, self.player_score)
-            
-            system_collision_enemy_bullet_with_player(self.ecs_world, self._player_entity, self.explosion_cfg)
-            system_end_explosion(self.ecs_world)
-            self.bullets_alive = len(self.ecs_world.get_component(CTagPlayerBullet))
-            
-            self.p_txt_s.visible = self._paused
-            self.paused_time=0
-            
+        else:
+            if not self._paused:
+                if not self.level_enemies_spawned:
+                    system_enemy_spawner(self.ecs_world,self.enemy_cfg, self.level_cfg["enemy_spawn_events"])
+                    self.level_enemies_spawned=True
+
+                
+                
+                system_enemy_basic_firing(self.ecs_world, self.bullet_cfg["enemy_bullet"])
+                self.enemy_movement_right = system_enemy_screen_bouncer(self.ecs_world, self.screen, self.enemy_movement_right, self.enemy_cfg["enemy_speed"])
+                
+                system_animation(self.ecs_world, self.delta_time)
+                system_enemy_basic_firing(self.ecs_world, self.bullet_cfg["enemy_bullet"])
+                self.player_score+= system_collision_player_bullet_with_enemy(self.ecs_world, self.explosion_cfg)
+                self.score_text_entity = system_display_score(self.ecs_world,self.score_text_entity, self.player_score)
+                
+                system_collision_enemy_bullet_with_player(self.ecs_world, self._player_entity, self.explosion_cfg)
+                system_end_explosion(self.ecs_world)
+                self.bullets_alive = len(self.ecs_world.get_component(CTagPlayerBullet))
+                
+                self.p_txt_s.visible = self._paused
+                self.paused_time=0
+                
 
      
         
