@@ -12,7 +12,7 @@ def system_top_ui_display(ecs_world:esper.World, window_cfg:dict):
                     pygame.Color(255, 50, 50), pygame.Vector2(25, 5), 
                     TextAlignment.CENTER)
     score_text_entity= create_text(ecs_world, "00", 8, 
-                    pygame.Color(255, 255, 255), pygame.Vector2(40, 15), 
+                    pygame.Color(255, 255, 255), pygame.Vector2(45, 15), 
                     TextAlignment.CENTER)
         
         

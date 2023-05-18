@@ -12,7 +12,7 @@ def system_display_score(world:esper.World, text_entity:int, score:int):
         text=str(score)
 
     text_entity = create_text(world, text, 8, 
-                    pygame.Color(255, 255, 255), pygame.Vector2(40, 15), 
+                    pygame.Color(255, 255, 255), pygame.Vector2(45, 15), 
                     TextAlignment.CENTER)
     return text_entity
     
