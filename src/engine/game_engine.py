@@ -132,7 +132,7 @@ class GameEngine:
                 system_enemy_basic_firing(self.ecs_world, self.bullet_cfg["enemy_bullet"])
                 self.enemy_movement_right = system_enemy_screen_bouncer(self.ecs_world, self.screen, self.enemy_movement_right, self.enemy_cfg["enemy_speed"])
                 
-                system_animation(self.ecs_world, self.delta_time)
+                
                 system_enemy_basic_firing(self.ecs_world, self.bullet_cfg["enemy_bullet"])
                 self.player_score+= system_collision_player_bullet_with_enemy(self.ecs_world, self.explosion_cfg)
                 self.score_text_entity = self.system_display_score(self.score_text_entity, self.player_score)
@@ -158,6 +158,7 @@ class GameEngine:
                 self.level_text_entity = self.system_display_level(self.level_text_entity, self.current_level)
                 
                 #pause settings
+                system_animation(self.ecs_world, self.delta_time)
                 self.p_txt_s.visible = self._paused
                 self.paused_time=0
                 

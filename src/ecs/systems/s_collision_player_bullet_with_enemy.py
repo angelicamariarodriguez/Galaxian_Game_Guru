@@ -19,7 +19,7 @@ def system_collision_player_bullet_with_enemy(world: esper.World, explosion_info
             if ene_rect.colliderect(bull_rect):
                 world.delete_entity(enemy_entity)
                 world.delete_entity(bullet_entity)
-                create_explosion(world, c_t.pos, explosion_info)
+                create_explosion(world, c_t.pos, explosion_info["enemy_explosion"])
                 score = c_ene.score
         
     return score           

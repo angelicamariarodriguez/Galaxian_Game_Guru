@@ -1,4 +1,4 @@
-{
+{   "enemy_explosion":{
     "image": "assets/img/invaders_enemy_explosion.png",
     "animations": {
         "number_frames": 4,
@@ -6,9 +6,25 @@
             {
                 "name": "EXPLODE",
                 "start": 0,
-                "end": 7,
-                "framerate": 16
+                "end": 4,
+                "framerate": 8
             }
         ]
     }
+
+    },
+    "player_explosion":{
+    "image": "assets/img/invaders_player_explosion.png",
+    "animations": {
+        "number_frames": 4,
+        "list": [
+            {
+                "name": "EXPLODE",
+                "start": 0,
+                "end": 4,
+                "framerate": 8
+            }
+        ]
+    }
+}
 }
