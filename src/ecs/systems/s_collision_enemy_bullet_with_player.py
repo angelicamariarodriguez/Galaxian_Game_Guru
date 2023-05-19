@@ -1,4 +1,5 @@
 import esper
+import pygame
 from src.create.prefab_creator import create_explosion
 #from src.create.prefab_creator import create_explosion
 from src.ecs.components.c_surface import CSurface
@@ -18,7 +19,9 @@ def system_collision_enemy_bullet_with_player(world: esper.World, player_entity:
         if pl_rect.colliderect(bull_rect):
                 #world.delete_entity(player_entity)
                 world.delete_entity(bullet_entity)
-                create_explosion(world, pl_t.pos, explosion_info["player_explosion"])
+                pos_x = pl_t.pos.x-(pl_rect.w/2)
+                pos_y = pl_t.pos.y-(pl_rect.h/2)
+                create_explosion(world, pygame.Vector2(pos_x, pos_y), explosion_info["player_explosion"])
         
                
 
