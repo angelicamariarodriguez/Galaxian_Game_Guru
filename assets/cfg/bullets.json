@@ -13,7 +13,7 @@
     },
 
     "player_bullet":{
-        "speed":70,
+        "speed":570,
         "color":{
             "r":255,
             "g":255,

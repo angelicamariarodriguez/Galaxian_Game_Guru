@@ -1,6 +1,7 @@
+from src.ecs.systems.s_display_level_restart_msg import system_display_level_restart_msg
+from src.ecs.systems.s_level_restart import system_level_restart
 from src.ecs.systems.s_top_ui_diplay import system_top_ui_display
 from src.ecs.systems.s_display_game_start import system_display_game_start
-from src.ecs.systems.s_display_score import system_display_score
 from src.ecs.systems.s_pause_text_blinker import system_pause_text_blinker
 from src.create.prefab_creator import create_input_player, create_player_bullet, create_player_square
 from src.ecs.components.c_input_command import CInputCommand, CommandPhase
@@ -47,9 +48,14 @@ class GameEngine:
         self._paused = False
         self.paused_time=0.0
         self.player_score = 0
+        self.current_level = 1
         self._game_start = True
         self.game_start_time = 0.0
         self.level_enemies_spawned = False
+        self.restart_time =0.0
+        self._lvl_restart= False
+        self.complete_text_ent=-1
+        self.get_ready_text_ent=-1
 
 
     def _load_config_files(self):
@@ -129,12 +135,29 @@ class GameEngine:
                 system_animation(self.ecs_world, self.delta_time)
                 system_enemy_basic_firing(self.ecs_world, self.bullet_cfg["enemy_bullet"])
                 self.player_score+= system_collision_player_bullet_with_enemy(self.ecs_world, self.explosion_cfg)
-                self.score_text_entity = system_display_score(self.ecs_world,self.score_text_entity, self.player_score)
+                self.score_text_entity = self.system_display_score(self.score_text_entity, self.player_score)
                 
                 system_collision_enemy_bullet_with_player(self.ecs_world, self._player_entity, self.explosion_cfg)
                 system_end_explosion(self.ecs_world)
                 self.bullets_alive = len(self.ecs_world.get_component(CTagPlayerBullet))
                 
+                #restart systems
+                self.complete_text_ent, self.get_ready_text_ent = system_display_level_restart_msg(self.ecs_world, 
+                                                                                                    self.window_cfg,
+                                                                                                    self._lvl_restart, 
+                                                                                                    self.complete_text_ent, 
+                                                                                                    self.get_ready_text_ent)        
+                self.restart_time, self._lvl_restart, self.current_level= system_level_restart(self.ecs_world, 
+                                                                            self.enemy_cfg, 
+                                                                            self.level_cfg["enemy_spawn_events"], 
+                                                                            self.delta_time, 
+                                                                            self.restart_time,
+                                                                            self.complete_text_ent, 
+                                                                            self.get_ready_text_ent,
+                                                                            self.current_level)
+                self.level_text_entity = self.system_display_level(self.level_text_entity, self.current_level)
+                
+                #pause settings
                 self.p_txt_s.visible = self._paused
                 self.paused_time=0
                 
@@ -181,6 +204,35 @@ class GameEngine:
         if c_input.name == "GAME_PAUSE" and c_input.phase == CommandPhase.START:  
         
             self._paused = not self._paused
-            
+
+    def system_display_score(self,text_entity:int, score:int):
+
+        self.ecs_world.delete_entity(text_entity)
+
+        if score==0:
+            text="00"
+        else:
+            text=str(score)
+
+        text_entity = create_text(self.ecs_world, text, 8, 
+                        pygame.Color(255, 255, 255), pygame.Vector2(45, 15), 
+                        TextAlignment.CENTER)
+        return text_entity  
+
+    def system_display_level(self,text_entity:int, level:int):
+
+        self.ecs_world.delete_entity(text_entity)
+
+        if level==1:
+            text="01"
+        elif level>=10:
+            text = str(level)
+        else:
+            text="0{}".format(str(level))
+
+        text_entity = create_text(self.ecs_world, text, 8, 
+                    pygame.Color(255, 255, 255), pygame.Vector2(self.window_cfg["size"]["w"]-30, 15), 
+                    TextAlignment.CENTER)
+        return text_entity    
         
             
