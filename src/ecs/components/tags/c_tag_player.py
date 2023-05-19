@@ -1,3 +1,3 @@
 class CTagPlayer:
     def __init__(self) -> None:
-        pass
+        self.current_time:float = 0

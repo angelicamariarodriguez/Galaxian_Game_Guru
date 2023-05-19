@@ -16,6 +16,7 @@ from src.ecs.systems.s_enemy_basic_firing import system_enemy_basic_firing
 from src.ecs.systems.s_enemy_screen_bouncer import system_enemy_screen_bouncer
 from src.ecs.systems.s_enemy_spawner import system_enemy_spawner
 from src.ecs.systems.s_input_player import system_input_player
+from src.ecs.systems.s_limit_bullet import system_limit_bullet
 from src.ecs.systems.s_limit_player import system_limit_player
 from src.ecs.systems.s_star_controller import system_star_controller
 from src.ecs.systems.s_movement import system_movement
@@ -118,6 +119,7 @@ class GameEngine:
         system_star_controller(self.ecs_world,self.screen, self.delta_time, self.bg_color)
         self.paused_time= system_pause_text_blinker(self.p_txt_s, self._paused, self.paused_time,self.delta_time )
         system_limit_player(self.ecs_world, self._player_entity, self.screen)
+        system_limit_bullet(self.ecs_world, self.screen)
         if self._game_start:
             self.game_start_time, self._game_start = system_display_game_start(self.ecs_world,self.game_start_text_ent,self.game_start_time, self.delta_time)
         
@@ -137,7 +139,7 @@ class GameEngine:
                 self.player_score+= system_collision_player_bullet_with_enemy(self.ecs_world, self.explosion_cfg)
                 self.score_text_entity = self.system_display_score(self.score_text_entity, self.player_score)
                 
-                system_collision_enemy_bullet_with_player(self.ecs_world, self._player_entity, self.explosion_cfg)
+                system_collision_enemy_bullet_with_player(self.ecs_world, self._player_entity, self.explosion_cfg, self.delta_time)
                 system_end_explosion(self.ecs_world)
                 self.bullets_alive = len(self.ecs_world.get_component(CTagPlayerBullet))
                 

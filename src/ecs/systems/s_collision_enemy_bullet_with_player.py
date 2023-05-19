@@ -6,22 +6,30 @@ from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.tags.c_tag_enemy_bullet import  CTagEnemyBullet
 from src.ecs.components.tags.c_tag_enemy import CTagEnemy
+from src.ecs.components.tags.c_tag_player import CTagPlayer
+from src.engine.service_locator import ServiceLocator
 
-def system_collision_enemy_bullet_with_player(world: esper.World, player_entity:int, explosion_info:dict):
+def system_collision_enemy_bullet_with_player(world: esper.World, player_entity:int, explosion_info:dict, delta_time:int):
     pl_t = world.component_for_entity(player_entity, CTransform)
     pl_s = world.component_for_entity(player_entity, CSurface)
+    pl_tag = world.component_for_entity(player_entity, CTagPlayer)
     pl_rect = CSurface.get_area_relative(pl_s.area, pl_t.pos)
     components_bullet = world.get_components(CSurface, CTransform, CTagEnemyBullet)
+
 
     for bullet_entity, (c_b_s, c_b_t, c_t_b) in components_bullet:
         bull_rect = c_b_s.area.copy()
         bull_rect.topleft = c_b_t.pos
         if pl_rect.colliderect(bull_rect):
+                pl_tag.current_time += delta_time
                 #world.delete_entity(player_entity)
                 world.delete_entity(bullet_entity)
                 pos_x = pl_t.pos.x-(pl_rect.w/2)
                 pos_y = pl_t.pos.y-(pl_rect.h/2)
                 create_explosion(world, pygame.Vector2(pos_x, pos_y), explosion_info["player_explosion"])
+                pl_s.visible = False
+                pl_s.visible = True
+               
         
                
 
