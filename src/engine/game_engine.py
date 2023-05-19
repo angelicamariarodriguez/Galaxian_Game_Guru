@@ -11,6 +11,7 @@ from src.ecs.systems.s_enemy_basic_firing import system_enemy_basic_firing
 from src.ecs.systems.s_enemy_screen_bouncer import system_enemy_screen_bouncer
 from src.ecs.systems.s_enemy_spawner import system_enemy_spawner
 from src.ecs.systems.s_input_player import system_input_player
+from src.ecs.systems.s_limit_bullet import system_limit_bullet
 from src.ecs.systems.s_limit_player import system_limit_player
 from src.ecs.systems.s_star_controller import system_star_controller
 from src.ecs.systems.s_movement import system_movement
@@ -91,6 +92,7 @@ class GameEngine:
 
     def _update(self):
         system_limit_player(self.ecs_world, self._player_entity, self.screen)
+        system_limit_bullet(self.ecs_world, self.screen)
         system_movement(self.ecs_world, self.delta_time)
         system_star_controller(self.ecs_world,self.screen, self.delta_time, self.bg_color)
         system_enemy_basic_firing(self.ecs_world, self.bullet_cfg["enemy_bullet"])

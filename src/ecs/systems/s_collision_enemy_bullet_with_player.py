@@ -1,10 +1,12 @@
 import esper
+import pygame
 from src.create.prefab_creator import create_explosion
 #from src.create.prefab_creator import create_explosion
 from src.ecs.components.c_surface import CSurface
 from src.ecs.components.c_transform import CTransform
 from src.ecs.components.tags.c_tag_enemy_bullet import  CTagEnemyBullet
 from src.ecs.components.tags.c_tag_enemy import CTagEnemy
+from src.engine.service_locator import ServiceLocator
 
 def system_collision_enemy_bullet_with_player(world: esper.World, player_entity:int, explosion_info:dict):
     pl_t = world.component_for_entity(player_entity, CTransform)
@@ -18,6 +20,7 @@ def system_collision_enemy_bullet_with_player(world: esper.World, player_entity:
         if pl_rect.colliderect(bull_rect):
                 #world.delete_entity(player_entity)
                 world.delete_entity(bullet_entity)
+                pl_s.visible = False
                 create_explosion(world, pl_t.pos, explosion_info)
         
                
