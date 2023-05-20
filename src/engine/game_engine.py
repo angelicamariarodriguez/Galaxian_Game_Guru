@@ -27,6 +27,7 @@ from src.create.prefab_creator import TextAlignment, create_text
 import json
 import pygame
 import esper
+import asyncio
 class GameEngine:
     def __init__(self) -> None:
         self._load_config_files()
@@ -75,7 +76,7 @@ class GameEngine:
         with open("assets/cfg/explosion.json") as explosion_file:
             self.explosion_cfg = json.load(explosion_file)
 
-    def run(self) -> None:
+    async def run(self) -> None:
         self._create()
         self.is_running = True
         while self.is_running:
@@ -83,7 +84,7 @@ class GameEngine:
             self._process_events()
             self._update()
             self._draw()
-            # await asyncio.sleep(0)
+            await asyncio.sleep(0)
         self._clean()
 
     def _create(self):
