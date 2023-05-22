@@ -149,11 +149,10 @@ class GameEngine:
                 self.player_score+= system_collision_player_bullet_with_enemy(self.ecs_world, self.explosion_cfg)
                 self.score_text_entity = self.system_display_score(self.score_text_entity, self.player_score)
                 
-                self.player_visible = system_collision_enemy_bullet_with_player(self.ecs_world, self._player_entity, self.explosion_cfg)
-                if self.player_visible == False:
-                    self.player_non_visible_time, self.player_visible = system_display_player(self.ecs_world,self._player_c_s,self.player_non_visible_time, self.delta_time)
-                else:
-                    pass
+                system_collision_enemy_bullet_with_player(self.ecs_world, self._player_entity, self.explosion_cfg)
+                
+                self.player_non_visible_time = system_display_player(self.ecs_world,self._player_entity,self.player_non_visible_time, self.delta_time)
+
                 system_end_explosion(self.ecs_world)
                 self.bullets_alive = len(self.ecs_world.get_component(CTagPlayerBullet))
                 
