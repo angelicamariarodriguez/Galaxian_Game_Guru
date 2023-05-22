@@ -63,6 +63,11 @@ class GameEngine:
         self.player_visible = True
         self.player_non_visible_time = 0.0
         self.game_start_text_ent=-1
+        self.player_dead=False
+        self.bullets_alive=0
+        self.player_lifes=3
+        self.game_over=False
+        self.game_over_displayed=False
 
 
     def _load_config_files(self):
@@ -102,9 +107,10 @@ class GameEngine:
         system_star_spawner(self.ecs_world, self.star_cfg, self.window_cfg["size"])
        
 
-        self.score_text_entity, paused_text_ent, self.level_text_entity = system_top_ui_display(self.ecs_world, self.window_cfg)
+        self.score_text_entity, paused_text_ent, self.level_text_entity, self.life_ent_list = system_top_ui_display(self.ecs_world, self.window_cfg)
         self.p_txt_s = self.ecs_world.component_for_entity(paused_text_ent, CSurface)
         self.p_txt_s.visible = self._paused
+        
 
     def _calculate_time(self):
         self.clock.tick(self.framerate)
@@ -114,17 +120,19 @@ class GameEngine:
 
     def _process_events(self):
         for event in pygame.event.get():
-            if not self._game_start:
+            if not self._game_start and not self.game_over :
                 system_input_player(self.ecs_world, event, self._do_action)
             if event.type == pygame.QUIT:
                 self.is_running = False
 
     def _update(self):
         
+        if self.player_lifes==-1:
+            self.system_game_over()
         system_movement(self.ecs_world, self.delta_time,self._paused)
         system_star_controller(self.ecs_world,self.screen, self.delta_time, self.bg_color)
         self.paused_time= system_pause_text_blinker(self.p_txt_s, self._paused, self.paused_time,self.delta_time )
-        system_limit_player(self.ecs_world, self._player_entity, self.screen)
+        
         system_limit_bullet(self.ecs_world, self.screen)
         if self._game_start:
             self.game_start_time, self._game_start, self.game_start_text_ent = system_display_game_start(self.ecs_world,
@@ -140,19 +148,26 @@ class GameEngine:
                     self.level_enemies_spawned=True
 
                 
+                if not self.game_over:
+                    system_enemy_basic_firing(self.ecs_world, self.bullet_cfg["enemy_bullet"])
+                    self.player_non_visible_time, self.player_dead = system_display_player(self.ecs_world,self._player_entity,self.player_non_visible_time, self.delta_time,  self.player_dead)
+                    system_enemy_basic_firing(self.ecs_world, self.bullet_cfg["enemy_bullet"])
+
                 
-                system_enemy_basic_firing(self.ecs_world, self.bullet_cfg["enemy_bullet"])
                 self.enemy_movement_right = system_enemy_screen_bouncer(self.ecs_world, self.screen, self.enemy_movement_right, self.enemy_cfg["enemy_speed"])
                 
                 
-                system_enemy_basic_firing(self.ecs_world, self.bullet_cfg["enemy_bullet"])
+                if not self.player_dead:
+                    system_limit_player(self.ecs_world, self._player_entity, self.screen)
+                    self.player_dead, self.player_lifes= system_collision_enemy_bullet_with_player(self.ecs_world, self._player_entity, self.explosion_cfg, self.player_lifes, self.life_ent_list)
+               
+                
+                
                 self.player_score+= system_collision_player_bullet_with_enemy(self.ecs_world, self.explosion_cfg)
                 self.score_text_entity = self.system_display_score(self.score_text_entity, self.player_score)
+                       
                 
-                system_collision_enemy_bullet_with_player(self.ecs_world, self._player_entity, self.explosion_cfg)
-                
-                self.player_non_visible_time = system_display_player(self.ecs_world,self._player_entity,self.player_non_visible_time, self.delta_time)
-
+            
                 system_end_explosion(self.ecs_world)
                 self.bullets_alive = len(self.ecs_world.get_component(CTagPlayerBullet))
                 
@@ -198,7 +213,7 @@ class GameEngine:
             
 
     def _do_action(self, c_input:CInputCommand):
-        
+      
         if c_input.name == "PLAYER_LEFT":
             if c_input.phase == CommandPhase.START:
                 self._player_c_vel.vel.x -= self.player_cfg["input_velocity"]
@@ -209,12 +224,13 @@ class GameEngine:
                 self._player_c_vel.vel.x += self.player_cfg["input_velocity"]
             elif c_input.phase == CommandPhase.END:
                 self._player_c_vel.vel.x -= self.player_cfg["input_velocity"]
-        if c_input.name == "PLAYER_FIRE" and self.bullets_alive == 0:
+        if c_input.name == "PLAYER_FIRE" and self.bullets_alive == 0 and not self.player_dead:
             if c_input.phase == CommandPhase.START:
+                ServiceLocator.sounds_service.play('assets/snd/player_shoot.ogg')
                 create_player_bullet(self.ecs_world, 
-                              self._player_c_trans.pos, 
-                              self._player_c_s.area.size, 
-                              self.bullet_cfg['player_bullet'])
+                            self._player_c_trans.pos, 
+                            self._player_c_s.area.size, 
+                            self.bullet_cfg['player_bullet'])
             elif c_input.phase == CommandPhase.END:
                 pass
         if c_input.name == "GAME_PAUSE" and c_input.phase == CommandPhase.START and not self._lvl_restart:  
@@ -251,5 +267,18 @@ class GameEngine:
                     pygame.Color(255, 255, 255), pygame.Vector2(self.window_cfg["size"]["w"]-30, 15), 
                     TextAlignment.CENTER)
         return text_entity    
-        
+    
+
+    def system_game_over(self):
+        self.game_over=True
+        if not self.game_over_displayed:
+            create_text(self.ecs_world, "GAME OVER", 8, 
+                        pygame.Color(255, 255, 255), pygame.Vector2(self.window_cfg["size"]["w"]/2, self.window_cfg["size"]["h"]/2), 
+                        TextAlignment.CENTER)
+            self.game_over_displayed=True
+                        
+
+
+
+
             

@@ -9,7 +9,7 @@ from src.ecs.components.tags.c_tag_enemy import CTagEnemy
 from src.ecs.components.tags.c_tag_player import CTagPlayer
 from src.engine.service_locator import ServiceLocator
 
-def system_collision_enemy_bullet_with_player(world: esper.World, player_entity:int, explosion_info:dict):
+def system_collision_enemy_bullet_with_player(world: esper.World, player_entity:int, explosion_info:dict, player_lifes:int, lifes_ent_list:list):
     pl_t = world.component_for_entity(player_entity, CTransform)
     pl_s = world.component_for_entity(player_entity, CSurface)
     pl_p = world.component_for_entity(player_entity, CTagPlayer)
@@ -25,9 +25,15 @@ def system_collision_enemy_bullet_with_player(world: esper.World, player_entity:
                 world.delete_entity(bullet_entity)
                 pos_x = pl_t.pos.x-(pl_rect.w/2)
                 pos_y = pl_t.pos.y-(pl_rect.h/2)
-                pl_s.visible = False            
+                pl_s.visible = False   
+                pl_t.pos=pygame.Vector2(128,210)  
                 create_explosion(world, pygame.Vector2(pos_x, pos_y), explosion_info["player_explosion"])
-                pl_p.show = False
+                if player_lifes>0:
+                    world.delete_entity(lifes_ent_list[player_lifes-1])
+                player_lifes -=1
+                return True , player_lifes
+
+    return False, player_lifes        
 
                 
         
