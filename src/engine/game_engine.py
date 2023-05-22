@@ -1,4 +1,5 @@
 from src.ecs.systems.s_display_level_restart_msg import system_display_level_restart_msg
+from src.ecs.systems.s_display_player import system_display_player
 from src.ecs.systems.s_level_restart import system_level_restart
 from src.ecs.systems.s_top_ui_diplay import system_top_ui_display
 from src.ecs.systems.s_display_game_start import system_display_game_start
@@ -57,6 +58,8 @@ class GameEngine:
         self._lvl_restart= False
         self.complete_text_ent=-1
         self.get_ready_text_ent=-1
+        self.player_visible = True
+        self.player_non_visible_time = 0.0
 
 
     def _load_config_files(self):
@@ -139,7 +142,11 @@ class GameEngine:
                 self.player_score+= system_collision_player_bullet_with_enemy(self.ecs_world, self.explosion_cfg)
                 self.score_text_entity = self.system_display_score(self.score_text_entity, self.player_score)
                 
-                system_collision_enemy_bullet_with_player(self.ecs_world, self._player_entity, self.explosion_cfg, self.delta_time)
+                self.player_visible = system_collision_enemy_bullet_with_player(self.ecs_world, self._player_entity, self.explosion_cfg)
+                if self.player_visible == False:
+                    self.player_non_visible_time, self.player_visible = system_display_player(self.ecs_world,self._player_c_s,self.player_non_visible_time, self.delta_time)
+                else:
+                    pass
                 system_end_explosion(self.ecs_world)
                 self.bullets_alive = len(self.ecs_world.get_component(CTagPlayerBullet))
                 
