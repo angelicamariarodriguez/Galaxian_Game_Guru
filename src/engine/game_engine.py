@@ -1,3 +1,4 @@
+from src.engine.service_locator import ServiceLocator
 from src.ecs.systems.s_display_level_restart_msg import system_display_level_restart_msg
 from src.ecs.systems.s_display_player import system_display_player
 from src.ecs.systems.s_level_restart import system_level_restart
@@ -28,6 +29,7 @@ from src.create.prefab_creator import TextAlignment, create_text
 import json
 import pygame
 import esper
+import asyncio
 class GameEngine:
     def __init__(self) -> None:
         self._load_config_files()
@@ -60,6 +62,7 @@ class GameEngine:
         self.get_ready_text_ent=-1
         self.player_visible = True
         self.player_non_visible_time = 0.0
+        self.game_start_text_ent=-1
 
 
     def _load_config_files(self):
@@ -78,7 +81,7 @@ class GameEngine:
         with open("assets/cfg/explosion.json") as explosion_file:
             self.explosion_cfg = json.load(explosion_file)
 
-    def run(self) -> None:
+    async def run(self) -> None:
         self._create()
         self.is_running = True
         while self.is_running:
@@ -86,7 +89,7 @@ class GameEngine:
             self._process_events()
             self._update()
             self._draw()
-            # await asyncio.sleep(0)
+            await asyncio.sleep(0)
         self._clean()
 
     def _create(self):
@@ -99,7 +102,7 @@ class GameEngine:
         system_star_spawner(self.ecs_world, self.star_cfg, self.window_cfg["size"])
        
 
-        self.score_text_entity, paused_text_ent, self.game_start_text_ent, self.level_text_entity = system_top_ui_display(self.ecs_world, self.window_cfg)
+        self.score_text_entity, paused_text_ent, self.level_text_entity = system_top_ui_display(self.ecs_world, self.window_cfg)
         self.p_txt_s = self.ecs_world.component_for_entity(paused_text_ent, CSurface)
         self.p_txt_s.visible = self._paused
 
@@ -124,7 +127,11 @@ class GameEngine:
         system_limit_player(self.ecs_world, self._player_entity, self.screen)
         system_limit_bullet(self.ecs_world, self.screen)
         if self._game_start:
-            self.game_start_time, self._game_start = system_display_game_start(self.ecs_world,self.game_start_text_ent,self.game_start_time, self.delta_time)
+            self.game_start_time, self._game_start, self.game_start_text_ent = system_display_game_start(self.ecs_world,
+                                                                                                         self.game_start_text_ent,
+                                                                                                         self.game_start_time, 
+                                                                                                         self.delta_time, 
+                                                                                                         self.window_cfg)
         
         else:
             if not self._paused:
@@ -211,8 +218,9 @@ class GameEngine:
                               self.bullet_cfg['player_bullet'])
             elif c_input.phase == CommandPhase.END:
                 pass
-        if c_input.name == "GAME_PAUSE" and c_input.phase == CommandPhase.START:  
-        
+        if c_input.name == "GAME_PAUSE" and c_input.phase == CommandPhase.START and not self._lvl_restart:  
+            if self.paused_time==0:
+                ServiceLocator.sounds_service.play('assets/snd/game_paused.ogg')
             self._paused = not self._paused
 
     def system_display_score(self,text_entity:int, score:int):
@@ -225,7 +233,7 @@ class GameEngine:
             text=str(score)
 
         text_entity = create_text(self.ecs_world, text, 8, 
-                        pygame.Color(255, 255, 255), pygame.Vector2(45, 15), 
+                        pygame.Color(255, 255, 255), pygame.Vector2(40, 15), 
                         TextAlignment.CENTER)
         return text_entity  
 

@@ -150,6 +150,6 @@ def create_explosion(world: esper.World, pos: pygame.Vector2, explosion_info: di
     world.add_component(explosion_entity, CTagExplosion())
     world.add_component(explosion_entity,
                         CAnimation(explosion_info["animations"]))
-    #ServiceLocator.sounds_service.play(explosion_info["sound"])
+    ServiceLocator.sounds_service.play(explosion_info["sound"])
     return explosion_entity
     
