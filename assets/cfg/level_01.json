@@ -1,0 +1,30 @@
+{ 
+    "enemy_spawn_events": [
+        {
+            "columns": 2,
+            "enemy_type": "Enemy_04"
+        },
+        {
+            "columns": 6,
+            "enemy_type": "Enemy_03"
+        },
+        {
+            "columns": 8,
+            "enemy_type": "Enemy_02"
+        },
+        {
+            "columns": 10,
+            "enemy_type": "Enemy_01"
+        },
+        {
+            "columns": 10,
+            "enemy_type": "Enemy_01"
+        },
+        {
+            "columns": 10,
+            "enemy_type": "Enemy_01"
+        }
+    ]
+    
+
+}
