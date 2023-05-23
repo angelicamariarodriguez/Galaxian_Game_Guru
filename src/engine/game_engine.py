@@ -272,6 +272,7 @@ class GameEngine:
     def system_game_over(self):
         self.game_over=True
         if not self.game_over_displayed:
+            ServiceLocator.sounds_service.play('assets/snd/game_over.ogg')
             create_text(self.ecs_world, "GAME OVER", 8, 
                         pygame.Color(255, 255, 255), pygame.Vector2(self.window_cfg["size"]["w"]/2, self.window_cfg["size"]["h"]/2), 
                         TextAlignment.CENTER)
